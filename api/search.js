@@ -1,5 +1,5 @@
 import playwright from 'playwright-aws-lambda';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 // Yeh Vercel ka official way hai serverless function banane ka
 export default async function handler(req, res) {
