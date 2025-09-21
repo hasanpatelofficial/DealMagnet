@@ -14,12 +14,12 @@ function App() {
     setError(null);
 
     try {
-      // Apne Vercel API helper ko call karo
+      // Vercel ke simple API route ko call karna
       const response = await fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`);
       
-      // Check karo ki response theek hai ya nahi
       if (!response.ok) {
-        throw new Error('Something went wrong on the server. Please try again.');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Something went wrong on the server.');
       }
 
       const data = await response.json();
@@ -57,12 +57,11 @@ function App() {
             className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            // Enter dabane par bhi search ho
             onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
           />
           <button 
             onClick={handleSearch}
-            disabled={isLoading} // Jab loading ho to button disable ho jaaye
+            disabled={isLoading}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-lg disabled:bg-blue-800 disabled:cursor-not-allowed"
           >
             {isLoading ? '...' : 'Search'}
