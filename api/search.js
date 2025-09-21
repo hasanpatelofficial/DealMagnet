@@ -1,4 +1,3 @@
-// FINAL WORKING VERSION with ScrapingAnt and Correct Cheerio Import
 import * as cheerio from 'cheerio';
 
 export default async function handler(req, res) {
@@ -12,8 +11,8 @@ export default async function handler(req, res) {
   try {
     const flipkartUrl = `https://www.flipkart.com/search?q=${encodeURIComponent(query)}`;
     
-    // 1. Call ScrapingAnt API
-    const scrapingAntUrl = `https://api.scrapingant.com/v2/general?url=${encodeURIComponent(flipkartUrl)}&x-api-key=${apiKey}`;
+    // --- YAHAN PAR BADLAV HUA HAI: browser=true & country=IN add kiya gaya hai ---
+    const scrapingAntUrl = `https://api.scrapingant.com/v2/general?url=${encodeURIComponent(flipkartUrl)}&x-api-key=${apiKey}&browser=true&country=IN`;
     
     const response = await fetch(scrapingAntUrl);
     if (!response.ok) {
@@ -21,12 +20,11 @@ export default async function handler(req, res) {
     }
     const data = await response.json();
 
-    // 2. Load the returned HTML into Cheerio
     const $ = cheerio.load(data.content);
 
     const results = [];
     $('div[data-id]').each((index, element) => {
-      if (index >= 6) return; // Limit to 6 results
+      if (index >= 6) return;
       
       const title = $(element).find('a[title]').attr('title');
       const price = $(element).find('div._30jeq3').text();
@@ -37,13 +35,7 @@ export default async function handler(req, res) {
         if (!productUrl.startsWith('http')) {
           productUrl = 'https://www.flipkart.com' + productUrl;
         }
-        results.push({
-          title,
-          price,
-          imageUrl,
-          productUrl,
-          source: 'Flipkart',
-        });
+        results.push({ title, price, imageUrl, productUrl, source: 'Flipkart' });
       }
     });
     
